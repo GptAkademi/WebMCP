@@ -1,56 +1,69 @@
-# WebMCP Kanban Board Demo
+# WebMCP Demo Collection
 
-This is a premium, dark-mode Kanban board application designed to demonstrate the **WebMCP (Web Model Context Protocol)** integration. It allows AI agents to programmatically control the board using standardized tools.
+**WebMCP (Web Model Context Protocol)** entegrasyonunu gosteren interaktif web uygulamalari. Her uygulama bagimsiz calisir — WebMCP, yapay zeka ajanlarina programatik kontrol ekler.
 
-## Features
+## Nasil Calistirilir
 
-- **Premium UI**: Cyberpunk-inspired dark mode with glassmorphism effects.
-- **Drag & Drop**: Native HTML5 drag-and-drop support for tasks.
-- **WebMCP Integration**: Exposes a `navigator.modelContext` interface for AI agents.
+Yerel bir HTTP sunucusu gereklidir (`file://` URL'leri calismaz — WebMCP guvenli baglan gerektirir).
 
-## How to Run
+```bash
+# Python 3
+python3 -m http.server 8000
 
-1.  **Start a Local Server**:
-    Because WebMCP requires a secure context (or localhost) and uses `postMessage`, you cannot simply open `index.html` as a file. You must serve it over HTTP.
-
-    If you have Python installed:
-    ```bash
-    python3 -m http.server 8000
-    ```
-
-    Or using Node.js `http-server`:
-    ```bash
-    npx http-server .
-    ```
-
-2.  **Open in Browser**:
-    Navigate to `http://localhost:8000` (or whatever port your server uses).
-
-## WebMCP Tools
-
-The application registers the following tools via `navigator.modelContext.registerTool`:
-
-| Tool Name | Description | Parameters |
-| :--- | :--- | :--- |
-| `create_task` | Create a new task | `title` (string), `description` (string), `priority` (low/medium/high) |
-| `move_task` | Move a task to a column | `id` (string), `column` (todo/in-progress/done) |
-| `delete_task` | Delete a task | `id` (string) |
-| `get_board_state` | Get all tasks & columns | None |
-
-## Testing Without WebMCP Browser
-
-If your browser does not support WebMCP yet, you can **simulate** it by pasting this code into your browser's Developer Console:
-
-```javascript
-// Mock WebMCP Environment
-window.navigator.modelContext = {
-    registerTool: (tool) => {
-        console.log(`[WebMCP] Registered Tool: ${tool.name}`);
-        // Expose tool to window for manual testing
-        window[tool.name] = tool.handler;
-    }
-};
-
-// Re-run the registration logic (simplest way is to reload the page after setting this, 
-// but since reload clears console, you can just paste the script.js content or manually trigger it).
+# veya Node.js
+npx http-server .
 ```
+
+Tarayicida `http://localhost:8000` adresine gidin.
+
+## Demolar
+
+### 01 — Kanban Panosu (`kanban.html`)
+
+Surekle-birak gorev yonetim panosu. Koyu cyberpunk temasi, glassmorphism efektleri.
+
+| Arac | Aciklama | Parametreler |
+| :--- | :--- | :--- |
+| `create_task` | Yeni gorev olustur | `title`, `description`, `priority` (low/medium/high) |
+| `move_task` | Gorevi tasI | `id`, `column` (todo/in-progress/done) |
+| `delete_task` | Gorevi sil | `id` |
+| `get_board_state` | Pano durumunu al | — |
+
+### 02 — Market Alisveris Listesi (`market.html`)
+
+Super App mimarisine sahip coklu market alisveris listesi. Alt uygulamalar (`markets/market1-3.html`) iframe icinde calisir ve araclarini `postMessage` ile ana uygulamaya kaydeder.
+
+| Arac | Aciklama | Parametreler |
+| :--- | :--- | :--- |
+| `add_item` | Urun ekle | `name`, `store` |
+| `move_item` | Urunu baska markete tasi | `name`, `store` |
+| `remove_item` | Urunu sil | `name` |
+| `update_item` | Urun adini guncelle | `name`, `new_name` |
+| `get_market_state` | Tum listeyi al | — |
+
+### 03 — Urun Arama (`search.html`)
+
+Deklaratif WebMCP demosu. Duz bir HTML form, `toolname` ozelligi sayesinde otomatik olarak yapay zekanin cagirabildigi bir araca donusur. Arac kaydi icin sifir JavaScript gerektirir.
+
+### 04 — Kat Plani Editoru (`floorplan/`)
+
+Canvas tabanli mekansal oda duzeni editoru. En guclu WebMCP ornegi — canvas yapay zekaya tamamen opak (DOM yok, screenshot parse edilemez), ancak araclar metre cinsinden tam mekansal kontrol saglar. Oda boyutu: 8m × 6m.
+
+| Arac | Aciklama | Parametreler |
+| :--- | :--- | :--- |
+| `add_furniture` | Mobilya ekle | `type`, `x`, `y`, `rotation` |
+| `move_furniture` | Mobilya tasi | `id`, `x`, `y` |
+| `rotate_furniture` | Mobilya dondur | `id`, `angle` |
+| `remove_furniture` | Mobilya sil | `id` |
+| `get_floor_state` | Kat planini al | — |
+| `clear_floor` | Tum mobilyalari sil | — |
+
+**Mobilya turleri:** sofa, bed, table, chair, desk, wardrobe, bookshelf, plant, tv, rug
+
+## Mimari
+
+- **Polyfill:** Uygulamalar `@mcp-b/global` polyfill'i yukler. Chrome native WebMCP destegi varsa polyfill'siz de calisir.
+- **Arac Kaydi:** `navigator.modelContext.registerTool()` ile yapilir.
+- **Super App:** `market.html` alt uygulama araclarini `postMessage` uzerinden toplar (`WEBMCP_REGISTER_TOOL` → `WEBMCP_EXECUTE_TOOL` → `WEBMCP_TOOL_RESULT`).
+- **Deklaratif API:** `declarative-polyfill.js`, `toolname` ozellikli `<form>` elemanlarini otomatik olarak WebMCP araclarina cevirir.
+- **State:** Tum uygulamalar bellekte basit bir `state` nesnesi kullanir, kalici depolama yoktur.
