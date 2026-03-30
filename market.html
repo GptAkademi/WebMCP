@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMCP Market Listesi</title>
+    <link rel="stylesheet" href="marketstyle.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Polyfill for WebMCP -->
+    <script src="https://unpkg.com/@mcp-b/global@latest/dist/index.iife.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo-area">
+                <i class="fas fa-shopping-basket"></i>
+                <h1>ALIŞVERİŞ <span class="highlight">LİSTESİ</span></h1>
+            </div>
+            <div class="stats">
+                <span id="total-items">0 ÜRÜN</span>
+                <span class="divider">|</span>
+                <span id="total-stores">3 MARKET</span>
+            </div>
+        </header>
+
+        <main class="market-grid">
+            <!-- Market 1 Column -->
+            <div class="market-column" id="market1" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="market-header">
+                    <h2>MARKET 1</h2>
+                    <span class="count" id="market1-count">0/0</span>
+                </div>
+                <div class="item-list" id="market1-list">
+                    <!-- Items will be injected here -->
+                </div>
+                <div class="add-item-area">
+                    <input type="text" placeholder="Ürün ekle..." onkeypress="handleEnter(event, 'market1')">
+                    <button onclick="addItemFromInput('market1')"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <!-- Market 2 Column -->
+            <div class="market-column" id="market2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="market-header">
+                    <h2>MARKET 2</h2>
+                    <span class="count" id="market2-count">0/0</span>
+                </div>
+                <div class="item-list" id="market2-list">
+                    <!-- Items will be injected here -->
+                </div>
+                <div class="add-item-area">
+                    <input type="text" placeholder="Ürün ekle..." onkeypress="handleEnter(event, 'market2')">
+                    <button onclick="addItemFromInput('market2')"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <!-- Market 3 Column -->
+            <div class="market-column" id="market3" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="market-header">
+                    <h2>MARKET 3</h2>
+                    <span class="count" id="market3-count">0/0</span>
+                </div>
+                <div class="item-list" id="market3-list">
+                    <!-- Items will be injected here -->
+                </div>
+                <div class="add-item-area">
+                    <input type="text" placeholder="Ürün ekle..." onkeypress="handleEnter(event, 'market3')">
+                    <button onclick="addItemFromInput('market3')"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </main>
+
+        <!-- SUPER APP DEMO SECTION -->
+        <section id="super-app-area" style="margin: 20px; padding: 20px; border-top: 2px dashed #ddd;">
+            <h3 style="text-align:center; color: #666;">🤖 AI Agent Workspace (Super App)</h3>
+            <p style="text-align:center; font-size: 0.9em; color:#888;">When you ask the agent to search, it will open
+                the relevant app below:</p>
+
+            <div class="app-frames" style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+                <!-- Market 1 App (Hidden by default) -->
+                <div class="phone-frame" id="frame-market1"
+                    style="display: none; width: 320px; height: 500px; border: 10px solid #333; border-radius: 30px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                    <iframe src="markets/market1.html" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+
+                <!-- Market 2 App (Hidden by default) -->
+                <div class="phone-frame" id="frame-market2"
+                    style="display: none; width: 320px; height: 500px; border: 10px solid #333; border-radius: 30px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                    <iframe src="markets/market2.html" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+
+                <!-- Market 3 App (Hidden by default) -->
+                <div class="phone-frame" id="frame-market3"
+                    style="display: none; width: 320px; height: 500px; border: 10px solid #333; border-radius: 30px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                    <iframe src="markets/market3.html" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Powered by <span class="highlight">WebMCP</span> & AI Agents</p>
+        </footer>
+    </div>
+
+    <script src="marketscript.js"></script>
+</body>
+
+</html>

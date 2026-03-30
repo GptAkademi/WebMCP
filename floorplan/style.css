@@ -1,0 +1,445 @@
+/* ========================================
+   FLOOR PLAN EDITOR — Blueprint Aesthetic
+   Dark architectural drafting table
+   ======================================== */
+
+:root {
+    --void: #0a0e17;
+    --deep: #0f1525;
+    --surface: #151d2e;
+    --surface-alt: #1a2438;
+    --border: #243044;
+    --border-bright: #2d3f5a;
+
+    /* Blueprint cyan palette */
+    --cyan-dim: #1a3a4a;
+    --cyan: #2dd4bf;
+    --cyan-bright: #5eead4;
+    --cyan-glow: rgba(45, 212, 191, 0.15);
+
+    /* Warm amber for furniture */
+    --amber: #f59e0b;
+    --amber-soft: #fbbf24;
+    --amber-glow: rgba(245, 158, 11, 0.12);
+
+    /* Coral for selected/active */
+    --coral: #fb7185;
+    --coral-glow: rgba(251, 113, 133, 0.15);
+
+    /* Text */
+    --text-1: #e2e8f0;
+    --text-2: #8899b0;
+    --text-3: #4a5d78;
+
+    /* Grid */
+    --grid-line: rgba(45, 212, 191, 0.06);
+    --grid-line-major: rgba(45, 212, 191, 0.12);
+
+    /* Typography */
+    --font-mono: 'DM Mono', monospace;
+    --font-display: 'Cormorant Garamond', serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-mono);
+    background: var(--void);
+    color: var(--text-1);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
+
+/* ========================================
+   APP SHELL
+   ======================================== */
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(45, 212, 191, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.02) 0%, transparent 50%),
+        var(--void);
+}
+
+/* ========================================
+   TOP BAR
+   ======================================== */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.25rem;
+    height: 56px;
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    z-index: 20;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo-mark {
+    color: var(--cyan);
+    display: flex;
+    align-items: center;
+}
+
+.logo-text h1 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: 0.02em;
+    line-height: 1;
+}
+
+.logo-sub {
+    font-size: 0.65rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+
+.topbar-center {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.room-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+}
+
+.room-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+}
+
+.room-dims {
+    font-size: 0.85rem;
+    color: var(--cyan);
+    font-weight: 500;
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.icon-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: var(--surface);
+    color: var(--cyan);
+    border-color: var(--cyan-dim);
+}
+
+.icon-btn.active {
+    background: var(--cyan-glow);
+    color: var(--cyan);
+    border-color: var(--cyan-dim);
+}
+
+.icon-btn.danger:hover {
+    color: var(--coral);
+    border-color: rgba(251, 113, 133, 0.3);
+    background: var(--coral-glow);
+}
+
+/* ========================================
+   WORKSPACE
+   ======================================== */
+
+.workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ========================================
+   PALETTE SIDEBAR
+   ======================================== */
+
+.palette {
+    width: 220px;
+    background: var(--deep);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+.palette-header {
+    padding: 0.75rem 1rem 0.4rem;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-3);
+    border-bottom: 1px solid var(--border);
+}
+
+.palette-items {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 0.6rem;
+}
+
+.palette-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.6rem 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    cursor: grab;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.palette-item:hover {
+    border-color: var(--amber);
+    background: var(--amber-glow);
+    transform: translateY(-1px);
+}
+
+.palette-item:active {
+    cursor: grabbing;
+    transform: scale(0.96);
+}
+
+.palette-item .item-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: var(--amber);
+    background: var(--amber-glow);
+    border-radius: 4px;
+}
+
+.palette-item .item-name {
+    font-size: 0.65rem;
+    color: var(--text-2);
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* ---- Properties Panel ---- */
+
+.properties-panel {
+    flex: 1;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.no-selection {
+    color: var(--text-3);
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 1.5rem 0;
+    font-style: italic;
+}
+
+.prop-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prop-label {
+    font-size: 0.65rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.prop-value {
+    font-size: 0.75rem;
+    color: var(--cyan);
+}
+
+.prop-actions {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+.prop-btn {
+    flex: 1;
+    padding: 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text-2);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+}
+
+.prop-btn:hover {
+    border-color: var(--cyan-dim);
+    color: var(--cyan);
+    background: var(--cyan-glow);
+}
+
+.prop-btn.danger:hover {
+    border-color: rgba(251, 113, 133, 0.3);
+    color: var(--coral);
+    background: var(--coral-glow);
+}
+
+/* ========================================
+   CANVAS AREA
+   ======================================== */
+
+.canvas-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(ellipse at center, rgba(45, 212, 191, 0.02) 0%, transparent 70%),
+        var(--void);
+    position: relative;
+    overflow: hidden;
+}
+
+.canvas-wrapper {
+    position: relative;
+    box-shadow:
+        0 0 0 1px var(--border),
+        0 0 60px rgba(45, 212, 191, 0.04),
+        0 20px 60px rgba(0, 0, 0, 0.4);
+    border-radius: 2px;
+}
+
+#floor-canvas {
+    display: block;
+    border-radius: 2px;
+    cursor: crosshair;
+}
+
+.coord-display {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: 0.65rem;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    pointer-events: none;
+    background: rgba(10, 14, 23, 0.7);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* ========================================
+   DRAG GHOST
+   ======================================== */
+
+.drag-ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.85;
+    padding: 0.4rem 0.7rem;
+    background: var(--surface-alt);
+    border: 1px solid var(--amber);
+    border-radius: 4px;
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+    transform: translate(-50%, -50%);
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.palette-item {
+    animation: fadeIn 0.3s ease both;
+}
+
+.palette-item:nth-child(1) { animation-delay: 0.02s; }
+.palette-item:nth-child(2) { animation-delay: 0.04s; }
+.palette-item:nth-child(3) { animation-delay: 0.06s; }
+.palette-item:nth-child(4) { animation-delay: 0.08s; }
+.palette-item:nth-child(5) { animation-delay: 0.10s; }
+.palette-item:nth-child(6) { animation-delay: 0.12s; }
+.palette-item:nth-child(7) { animation-delay: 0.14s; }
+.palette-item:nth-child(8) { animation-delay: 0.16s; }
+.palette-item:nth-child(9) { animation-delay: 0.18s; }
+.palette-item:nth-child(10) { animation-delay: 0.20s; }
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .palette { width: 160px; }
+    .topbar-center { display: none; }
+    .palette-items { grid-template-columns: 1fr; }
+}

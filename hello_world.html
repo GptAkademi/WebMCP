@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebMCP Hello World</title>
+</head>
+<body>
+    <h1>WebMCP Hello World Example</h1>
+    <p>Tool registered and ready for AI agents!</p>
+    
+    <!-- IIFE formatında polyfill yükle -->
+    <script src="https://unpkg.com/@mcp-b/global@latest/dist/index.iife.js"></script>
+    
+    <script>
+        // Polyfill yüklendikten sonra tool'u kaydet
+        if ('modelContext' in navigator) {
+            console.log('WebMCP supported, registering hello_world tool...');
+            
+            navigator.modelContext.registerTool({
+                name: 'hello_world',
+                description: 'Says hello to someone',
+                inputSchema: {
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'Name of person to greet'
+                        }
+                    },
+                    required: ['name']
+                },
+                execute: async ({ name }) => {
+                    return {
+                        content: [{
+                            type: 'text',
+                            text: `Hello, ${name}! Welcome to WebMCP! 👋`
+                        }]
+                    };
+                }
+            });
+            
+            console.log('✅ hello_world tool registered successfully!');
+        } else {
+            console.error('❌ navigator.modelContext not available');
+        }
+    </script>
+</body>
+</html>

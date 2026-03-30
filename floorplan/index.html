@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMCP Floor Plan Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="logo-mark">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <rect x="2" y="2" width="10" height="10" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <rect x="16" y="2" width="10" height="10" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <rect x="2" y="16" width="10" height="10" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <rect x="16" y="16" width="10" height="10" stroke="currentColor" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Floor Plan</h1>
+                    <span class="logo-sub">WebMCP Spatial Editor</span>
+                </div>
+            </div>
+            <div class="topbar-center">
+                <div class="room-info">
+                    <span class="room-label">Room</span>
+                    <span class="room-dims" id="room-dims">8m &times; 6m</span>
+                </div>
+                <div class="divider"></div>
+                <div class="room-info">
+                    <span class="room-label">Objects</span>
+                    <span class="room-dims" id="obj-count">0</span>
+                </div>
+                <div class="divider"></div>
+                <div class="room-info">
+                    <span class="room-label">Scale</span>
+                    <span class="room-dims">1:50</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <button class="icon-btn" id="grid-toggle" title="Toggle Grid">
+                    <i class="fas fa-border-all"></i>
+                </button>
+                <button class="icon-btn" id="labels-toggle" title="Toggle Labels">
+                    <i class="fas fa-tag"></i>
+                </button>
+                <button class="icon-btn danger" id="clear-btn" title="Clear All">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="workspace">
+            <!-- Furniture Palette -->
+            <aside class="palette">
+                <div class="palette-header">
+                    <span>Furniture</span>
+                </div>
+                <div class="palette-items" id="palette-items">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="palette-header" style="margin-top: 0.5rem;">
+                    <span>Selected</span>
+                </div>
+                <div class="properties-panel" id="properties-panel">
+                    <div class="no-selection">Click an object on the canvas</div>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <main class="canvas-area">
+                <div class="canvas-wrapper" id="canvas-wrapper">
+                    <canvas id="floor-canvas"></canvas>
+                    <!-- Coordinate overlay -->
+                    <div class="coord-display" id="coord-display">x: 0, y: 0</div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@mcp-b/global@latest/dist/index.iife.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

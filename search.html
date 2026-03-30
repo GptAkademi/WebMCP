@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMCP Declarative Search Demo</title>
+    <!-- Official WebMCP Polyfill -->
+    <script src="https://unpkg.com/@mcp-b/global@latest/dist/index.iife.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #111827;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input[type="text"] {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        #results {
+            margin-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+
+        .debug-info {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #6b7280;
+            background: #f9fafb;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Product Search</h1>
+
+        <!-- 
+      DECLARATIVE WEBMCP API 
+      The browser/agent reads these attributes to understand the tool.
+    -->
+        <form action="#" toolname="search_products"
+            tooldescription="Search for product prices and stock information. Returns a list of matching products with price and inventory details."
+            toolautosubmit>
+            <label for="query" style="display:none;">Search Query</label>
+            <input type="text" name="query" id="query" placeholder="Search products (e.g. 'Apple')..." required
+                toolparamdescription="The name of the product to search for">
+            <button type="submit">Search</button>
+        </form>
+
+        <div id="results"></div>
+        <div id="debug" class="debug-info"></div>
+    </div>
+
+    <script>
+        const mockDatabase = [
+            { name: "Elma", price: "110TL", stock: 150 },
+            { name: "Muz", price: "85TL", stock: 200 },
+            { name: "Portakal", price: "100TL", stock: 120 },
+            { name: "Süt", price: "95TL", stock: 50 },
+            { name: "Ekmek", price: "35TL", stock: 40 },
+            { name: "Yumurta", price: "60TL", stock: 60 },
+            { name: "Su", price: "20TL", stock: 40 },
+            { name: "Ayran", price: "25TL", stock: 60 }
+        ];
+
+        document.querySelector('form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const resultsContainer = document.getElementById('results');
+            const debugContainer = document.getElementById('debug');
+
+            // 1. Define the Async Logic
+            const searchOperation = async () => {
+                const query = new FormData(event.target).get('query').toString().toLowerCase();
+
+                resultsContainer.innerHTML = '<p style="color:#666; text-align:center;">Searching...</p>';
+
+                // Simulate network delay
+                await new Promise(r => setTimeout(r, 600));
+
+                // Filter results
+                const matches = mockDatabase.filter(p => p.name.toLowerCase().includes(query));
+
+                // Render to UI
+                if (matches.length > 0) {
+                    resultsContainer.innerHTML = matches.map(p => `
+                        <div class="result-item">
+                            <span>${p.name}</span>
+                            <span style="font-weight:bold;">${p.price}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    resultsContainer.innerHTML = '<p style="color:red; text-align:center;">No products found.</p>';
+                }
+
+                if (event.agentInvoked) {
+                    debugContainer.style.display = 'block';
+                    debugContainer.textContent = "Agent invoked this search. Returning JSON data...";
+                } else {
+                    debugContainer.style.display = 'none';
+                }
+
+                // Return data for the agent
+                return {
+                    status: "success",
+                    query: query,
+                    results: matches
+                };
+            };
+
+            // 2. Execute Logic
+            const resultPromise = searchOperation();
+
+            // 3. RESPOND TO AGENT (Must be synchronous!)
+            // We pass the pending promise to WebMCP immediately.
+            if (event.agentInvoked) {
+                event.respondWith(resultPromise);
+            }
+        });
+
+    </script>
+    <script src="declarative-polyfill.js"></script>
+    <script>
+        // Console log to verify polyfill is working
+        console.log("WebMCP Polyfill Status:", window.webmcpTools ? "Active" : "Inactive");
+    </script>
+</body>
+
+</html>

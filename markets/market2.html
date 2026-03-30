@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market 2 Market</title>
+    <script src="https://unpkg.com/@mcp-b/global@latest/dist/index.iife.js"></script>
+    <script src="../declarative-polyfill.js"></script>
+    <style>
+        body {
+            font-family: 'Verdana', sans-serif;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .app-header {
+            background-color: #00838f;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .product-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 5px solid #00838f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            color: #00838f;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #00838f;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-header">
+        <h2>MARKET 2</h2>
+    </div>
+
+    <form toolname="market2_search" tooldescription="Search for products in Market 2 Market for local prices."
+        toolautosubmit="true">
+        <input type="text" name="query" placeholder="Market 2'ta Ara..."
+            toolparamdescription="Name of the product to find." autocomplete="off">
+        <button type="submit">Ara</button>
+    </form>
+
+    <div id="results" style="margin-top: 20px;"></div>
+    <div id="debug" style="margin-top: 20px; font-size: 0.8em; color: gray; display: none;"></div>
+
+    <script>
+        // Mock Database for Market 2 (Local market prices)
+        const mockDatabase = [
+            { name: "Köy Yumurtası (10'lu)", price: "55.00 TL", stock: 30 },
+            { name: "Taze Süt (1L)", price: "28.00 TL", stock: 20 },
+            { name: "Ekşi Mayalı Ekmek", price: "20.00 TL", stock: 15 },
+            { name: "Muz (kg)", price: "40.00 TL", stock: 50 },
+            { name: "Ege Zeytinyağı (1L)", price: "320.00 TL", stock: 12 }
+        ];
+
+        document.querySelector('form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const resultsContainer = document.getElementById('results');
+            const debugContainer = document.getElementById('debug');
+
+            const searchOperation = async () => {
+                const query = new FormData(event.target).get('query').toString().toLowerCase();
+
+                resultsContainer.innerHTML = '<p style="text-align:center;">Raf kontrol ediliyor...</p>';
+                await new Promise(r => setTimeout(r, 400)); // Faster local network
+
+                const matches = mockDatabase.filter(p => p.name.toLowerCase().includes(query));
+
+                if (matches.length > 0) {
+                    resultsContainer.innerHTML = matches.map(p => `
+                        <div class="product-card">
+                            <span>${p.name}</span>
+                            <span class="price">${p.price}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    resultsContainer.innerHTML = '<p style="text-align:center;">Maalesef yok.</p>';
+                }
+
+                if (event.agentInvoked) {
+                    debugContainer.style.display = 'block';
+                    debugContainer.innerText = "Agent invoked search.";
+                }
+
+                return {
+                    store: "Market 2",
+                    status: "success",
+                    query: query,
+                    results: matches
+                };
+            };
+
+            const resultPromise = searchOperation();
+
+            if (event.agentInvoked) {
+                event.respondWith(resultPromise);
+            }
+        });
+    </script>
+</body>
+
+</html>
