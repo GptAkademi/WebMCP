@@ -1,4 +1,4 @@
-# WebMCP Demo Collection
+# WebMCP Demo Web Siteleri
 
 **WebMCP (Web Model Context Protocol)** entegrasyonunu gosteren interaktif web uygulamalari. Her uygulama bagimsiz calisir — WebMCP, yapay zeka ajanlarina programatik kontrol ekler.
 
